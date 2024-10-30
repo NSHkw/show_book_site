@@ -32,5 +32,6 @@ export class Book {
   user: User;
 
   @ManyToOne((type) => Schedule, { onDelete: 'CASCADE' })
+  @JoinColumn()
   schedule: Schedule;
 }
