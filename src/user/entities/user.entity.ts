@@ -21,11 +21,19 @@ export class User {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
+  /**
+   * 이메일
+   * @example "example@example.com"
+   */
   @IsNotEmpty({ message: '이메일 입력' })
   @IsEmail({}, { message: '이메일 형식 맞지 않음' })
   @Column({ unique: true })
   email: string;
 
+  /**
+   * 비밀번호
+   * @example "example!"
+   */
   @IsNotEmpty({ message: '비밀번호 확인을 입력' })
   @IsStrongPassword(
     {},
@@ -36,6 +44,10 @@ export class User {
   @Column({ select: false })
   password: string;
 
+  /**
+   * 닉네임
+   * @example "닉네임"
+   */
   @IsNotEmpty({ message: '닉네임 입력' })
   @IsString()
   @Column()
