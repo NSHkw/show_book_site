@@ -9,6 +9,7 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CreateShowDto } from './dto/create-show.dto';
@@ -16,6 +17,7 @@ import { UpdateShowDto } from './dto/update-show.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from 'src/user/types/user-role.type';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { FindAllShowDto } from './dto/find-all-show.dto';
 
 @ApiTags('공연 정보')
 @Controller('show')
@@ -46,8 +48,13 @@ export class ShowController {
    * @returns
    */
   @Get()
-  findAll() {
-    return this.showService.findAll();
+  async findAll(@Query() findAllShowDto: FindAllShowDto) {
+    const data = await this.showService.findAll(findAllShowDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '공연 목록 조회',
+      data,
+    };
   }
 
   /**
@@ -56,7 +63,12 @@ export class ShowController {
    * @returns
    */
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.showService.findOne(+id);
+  async findOne(@Param('id') id: number) {
+    const data = await this.showService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '공연 상세 조회',
+      data,
+    };
   }
 }
