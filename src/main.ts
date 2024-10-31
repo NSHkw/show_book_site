@@ -20,9 +20,16 @@ async function bootstrap() {
     .setTitle('show book')
     .setDescription('show book site')
     .setVersion('1.0')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api', app, documentFactory, {
+    swaggerOptions: {
+      persistAuthorization: true, // 새로고침 시에도 JWT 유지
+      tagsSorter: 'alpha', // API 그룹 정렬 알파벳 순
+      operationsSorter: 'alpha', // API 그룹 내 정렬 알파벳 순
+    },
+  });
 
   await app.listen(process.env.SERVER_PORT ?? 3000);
 }
