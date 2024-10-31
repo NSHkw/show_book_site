@@ -15,10 +15,10 @@ export class Book {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Column({ name: 'user_id' })
+  @Column({ unsigned: true, name: 'user_id' })
   userId: number;
 
-  @Column({ name: 'schedule_id' })
+  @Column({ unsigned: true, name: 'schedule_id' })
   scheduleId: number;
 
   @CreateDateColumn({ name: 'created_at' })

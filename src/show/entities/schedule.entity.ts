@@ -36,5 +36,6 @@ export class Schedule {
   show: Show;
 
   @OneToOne((type) => Seat, (seat) => seat.schedule)
+  @JoinColumn()
   seat: Seat;
 }
