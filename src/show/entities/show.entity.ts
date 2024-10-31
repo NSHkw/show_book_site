@@ -20,7 +20,7 @@ export class Show {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'enum', enum: 'showCategory' })
+  @Column({ type: 'enum', enum: showCategory })
   category: showCategory;
 
   @Column()
