@@ -25,5 +25,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ], // jwt에 대한 환경 변수 필요하므로 async
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy],
+  exports: [TypeOrmModule.forFeature([User])],
 })
 export class AuthModule {}

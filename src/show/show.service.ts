@@ -1,11 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateShowDto } from './dto/create-show.dto';
-import { UpdateShowDto } from './dto/update-show.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Show } from './entities/show.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ShowService {
-  create(createShowDto: CreateShowDto) {
-    return 'This action adds a new show';
+  constructor(@InjectRepository(Show) private readonly showRepository: Repository<Show>) {}
+
+  async create(createShowDto: CreateShowDto) {
+    const { schedules, seats, ...restOfShow } = createShowDto;
+
+    const show = await this.showRepository.save({
+      ...restOfShow,
+      schedules: schedules.map((schedule) => {
+        return {
+          ...schedule,
+          seat: {
+            availableSeats: seats,
+            totalSeats: seats,
+          },
+        };
+      }),
+    });
+
+    return show;
   }
 
   findAll() {
@@ -14,13 +33,5 @@ export class ShowService {
 
   findOne(id: number) {
     return `This action returns a #${id} show`;
-  }
-
-  update(id: number, updateShowDto: UpdateShowDto) {
-    return `This action updates a #${id} show`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} show`;
   }
 }
