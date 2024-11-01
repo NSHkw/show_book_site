@@ -1,4 +1,3 @@
-// src/auth/auth.service.ts
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { InjectRepository } from '@nestjs/typeorm';
