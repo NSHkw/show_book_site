@@ -1,0 +1,2 @@
+export const DEFAULT_CUSTOMER_POINT = 1000000;
+export const MAX_PRICE = 50000;
