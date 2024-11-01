@@ -1,5 +1,10 @@
 import { Schedule } from 'src/show/entities/schedule.entity';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entities/book.entity';
@@ -95,5 +100,53 @@ export class BookService {
     }
 
     return book;
+  }
+
+  async cancelBook(userId: number, bookId: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const book = await queryRunner.manager.findOne(Book, {
+        where: { id: bookId, userId },
+        relations: {
+          schedule: {
+            show: true,
+          },
+        },
+      });
+
+      if (!book) {
+        throw new NotFoundException('예약 정보 X');
+      }
+
+      const refundPrice = book.schedule.show.price;
+      const user = await queryRunner.manager.findOneBy(User, { id: userId });
+      user.points += refundPrice;
+      await queryRunner.manager.save(User, user);
+
+      const seat = await queryRunner.manager.findOneBy(Seat, {
+        scheduleId: book.scheduleId,
+      });
+      seat.availableSeats++;
+      await queryRunner.manager.save(Seat, seat);
+
+      await queryRunner.manager.delete(Book, { id: bookId });
+
+      await queryRunner.commitTransaction();
+
+      await queryRunner.release();
+
+      return {
+        refundPrice: refundPrice,
+        currentPoint: user.points,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      throw new InternalServerErrorException('예약 취소 중 에러');
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpStatus,
   Request,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -73,5 +74,20 @@ export class BookController {
   findOne(@Request() req, @Param('id') id: number) {
     const userId = req.user.id;
     return this.bookService.findOne(id, userId);
+  }
+
+  @ApiBearerAuth()
+  @Roles(UserRole.Customer)
+  @UseGuards(RolesGuard)
+  @Delete(':bookId')
+  async cancelBook(@Request() req, @Param('bookId', ParseIntPipe) bookId: number) {
+    const userId = req.user.id;
+    const data = await this.bookService.cancelBook(userId, bookId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '공연 예매 취소 성공',
+      data,
+    };
   }
 }
